@@ -4,9 +4,9 @@ A game similar to the famous Chrome Dino Game, built using pygame-ce.
 Made by intern: @bassemfarid, no one or nothing else. 🤖
 """
 
-import pygame
+import pygame 
 
-# Initialize Pygame and create a window
+# Initialize Pygame and create a window 
 pygame.init()
 screen = pygame.display.set_mode((800, 400))
 clock = pygame.time.Clock()
