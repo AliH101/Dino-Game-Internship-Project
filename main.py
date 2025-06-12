@@ -4,13 +4,12 @@ A game similar to the famous Chrome Dino Game, built using pygame-ce.
 Made by intern: @bassemfarid, no one or nothing else. 🤖
 """
 
-print("aaa")
+
 
 import pygame
 from random import randint
 import random
-
-print("meow")
+import math 
 
 def display_score():
     global score
@@ -294,6 +293,8 @@ def display_armour():
             armour_active = False
 
 def game_over():
+    '''
+    '''
     screen.blit(sky_surf, (0, 0), (0, 0, 800, 325))
 
     if layer_2_surf: screen.blit(layer_2_surf, (moon_x, 0))
@@ -325,7 +326,9 @@ def game_over():
     menu_rect = menu_surf.get_rect(center=(400, 280))
     screen.blit(menu_surf, menu_rect)
 
-# Initialize Pygame and create a window 
+
+
+#  Initialize Pygame and create a window 
 pygame.init()
 screen = pygame.display.set_mode((800, 400))
 clock = pygame.time.Clock()
@@ -333,11 +336,9 @@ running = True  # Pygame main loop, kills pygame when False
 test_font = pygame.font.Font(None, 50)
 start_time = 0
 score = 0
+high_score = 0
 
-print("ello")
 
-
-#resizing the image to make it right
 player_walk = []
 scale = 0.1
 for i in range(1,16):
@@ -355,7 +356,6 @@ for i in range(1, 6):
     player_fly.append(scaled_img)
 
 
-# Add laser timer after your obstacle_timer (around line 295)
 laser_timer = pygame.USEREVENT + 2
 pygame.time.set_timer(laser_timer, 3000)  # Spawn laser every 3 seconds
 # rocket timers and etc
@@ -367,18 +367,13 @@ pygame.time.set_timer(powerup_timer, 8000)
 
 
 # Game state variables
-is_playing = "menu"  # Whether in game or in menu
+is_playing = "menu" 
 GROUND_Y = 330  # The Y-coordinate of the ground level
 JUMP_GRAVITY_START_SPEED = -1  # The speed at which the player jumps
 players_gravity_speed = 0  # The current speed at which the player falls
 
-# Load level assets
+
 game_font = pygame.font.Font(pygame.font.get_default_font(), 50)
-
-# title on the game menu
-title_surf = game_font.render('Pirate game', True, "Black")
-title_rect = title_surf.get_rect(center=(400, 50))
-
 obstacle_rect_list = []
 
 # Load sprite assets for player
@@ -478,6 +473,10 @@ life_surf = pygame.transform.scale(life_surf, (30, 30))
 game_surf = pygame.image.load('graphics/game_over.png')
 game_surf = pygame.transform.scale(game_surf, (350,200))
 
+title_surf = pygame.image.load('graphics/title.png').convert_alpha()
+title_surf = pygame.transform.scale(title_surf, (350,200))
+
+
 GROUND_SURF = ground_5
 
 current_level = 4
@@ -523,8 +522,6 @@ laser_Surf = pygame.transform.scale(laser_Surf, (100, 8))
 obstacle_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(obstacle_timer,1500)
 
-print("wsg")
-
 while running:
     # Poll for events
     for event in pygame.event.get():
@@ -533,7 +530,7 @@ while running:
             running = False
 
         elif is_playing == "playing":
-            # When player wants to jump by pressing SPACE
+            #jumping by pressing space 
             if (
                 event.type == pygame.KEYDOWN
                 and event.key == pygame.K_SPACE
@@ -541,7 +538,7 @@ while running:
             ) and player_rect.bottom >= GROUND_Y:
                 players_gravity_speed = JUMP_GRAVITY_START_SPEED
         else:
-            # When player wants to play again by pressing SPACE
+           #playing game by pressin gspace 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 is_playing = "playing"
                 egg_rect.left = 800
@@ -555,10 +552,10 @@ while running:
             obstacle_rect_list.append(egg_obstacle)
 
         if event.type == laser_timer and is_playing == "playing":
-            # Create random laser properties
-            laser_length = randint(40, 80)    # Much shorter - only 40-80 pixels long
-            laser_width = randint(2, 5)       # Very thin - only 2-5 pixels wide
-            laser_angle = randint(-45, 45)    # Limited angle range so it's not vertical
+            
+            laser_length = randint(40, 80)    
+            laser_width = randint(2, 5)       
+            laser_angle = randint(-45, 45)    
             laser_x = randint(900, 1100)
             laser_y = randint(80, 200) 
 
@@ -567,7 +564,7 @@ while running:
             laser_rotated = pygame.transform.rotate(laser_scaled, laser_angle)
 
             laser_rect = laser_rotated.get_rect()
-            laser_rect.center = (laser_x, laser_y)  # Now this works correctly
+            laser_rect.center = (laser_x, laser_y)  
 
             laser_obstacle = {
                 'type': 'laser',
@@ -611,14 +608,27 @@ while running:
                 'rect': powerup_rect
             }
             powerup_list.append(new_powerup)
-    print("tests")
 
     if is_playing == "menu":
         screen.fill("black")
-        print("hello")
         screen.blit(background_4_1)
+        screen.blit(background_4_2)
+        screen.blit(background_4_3)
+        screen.blit(background_4_4)
+        screen.blit(GROUND_SURF, (0, 300))
+        screen.blit(title_surf,(220, 50))
 
+        small_font = pygame.font.Font(pygame.font.get_default_font(), 25)
 
+        high_score_surf = small_font.render('High Score', True, "Black")
+        high_score_rect = high_score_surf.get_rect(center=(700, 50))
+        screen.blit(high_score_surf, high_score_rect)
+
+        score_1_surf = small_font.render(f'{high_score:.2f}', True, "Black")
+        score_1_rect = score_1_surf.get_rect(center=(700, 75))
+        screen.blit(score_1_surf, score_1_rect)
+
+        
 
 
     elif is_playing == "playing":
@@ -647,7 +657,9 @@ while running:
             player_rect.bottom = GROUND_Y
         player_animation()
         screen.blit(player_surf, player_rect)
-        
+
+        if score > high_score:
+            high_score = score 
 
         # obstacle movement
         obstacle_rect_list = obstacle_movement(obstacle_rect_list)
@@ -656,19 +668,21 @@ while running:
 
         collision_result = collision(player_rect, obstacle_rect_list)
         if not collision_result:
-            is_playing = False
+            is_playing = "game over"
 
     # When game is over, display game over message
     elif is_playing == 'game over':
         game_over()
 
+        if high_score > score:
+            high_score == score 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     # Reset everything for new game
-                    is_playing = True
+                    is_playing = "playing"
                     start_time = pygame.time.get_ticks() / 1000
                     player_lives = 3  # Reset lives to 3
                     armour_active = False
@@ -678,12 +692,19 @@ while running:
                     players_gravity_speed = 0
                     player_rect.bottom = GROUND_Y
                     score = 0  # Reset score
-                elif event.key == pygame.K_m:
-                    # We'll implement menu later
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_m:
+                    is_playing = "menu"
+                    start_time = pygame.time.get_ticks() / 1000
+                    player_lives = 3  # Reset lives to 3
+                    armour_active = False
+                    armour_timer = 0
+                    powerup_list.clear()
+                    obstacle_rect_list.clear()
+                    players_gravity_speed = 0
+                    player_rect.bottom = GROUND_Y
+                    score = 0  # Reset score
                     pass
         
-
-
    
     # flip the display to put your work on screen
     pygame.display.flip()
